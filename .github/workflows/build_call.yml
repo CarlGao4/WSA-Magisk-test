@@ -44,49 +44,65 @@ on:
         required: false
         # options: ["zip","7z"]
         default: "7z"
+      release:
+        type: boolean
+        description: Whether to release artifacts.
+        required: false
+        default: false
 
 concurrency:
   group: ${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  # build:
-  #   name: Build WSA
-  #   runs-on: ubuntu-latest
+  build:
+    name: Build WSA
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
+    outputs:
+      zipname: ${{ steps.wsa.outputs.artifact }}
+      date: ${{ steps.date.outputs.date }}
 
-  #     - name: Install Dependencies
-  #       run: |
-  #         sudo apt-get update -y
-  #         sudo apt-get install -y whiptail lzip patchelf e2fsprogs python3-pip p7zip-full attr qemu-utils unzip sudo
-  #         python3 -m pip install -r scripts/requirements.txt -q
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
-  #     - name: Grant executable permission
-  #       run: chmod +x ./scripts/build.sh
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y whiptail lzip patchelf e2fsprogs python3-pip p7zip-full attr qemu-utils unzip sudo
+          python3 -m pip install -r scripts/requirements.txt -q
 
-  #     - name: Build WSA GAPPS ${{ inputs.arch }}
-  #       id: wsa
-  #       run: ./scripts/build.sh --arch ${{ inputs.arch }} --release-type ${{ inputs.release-type }} --magisk-ver ${{ inputs.magisk-ver }} --gapps-brand ${{ inputs.gapps-brand }} --gapps-variant ${{ inputs.gapps-variant }} --root-sol ${{ inputs.root-sol }} --compress-format ${{ inputs.compress-format }}
+      - name: Grant executable permission
+        run: chmod +x ./scripts/build.sh
 
-  #     - name: Pass to Windows
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: ${{ steps.wsa.outputs.artifact }}.${{ inputs.compress-format }}
-  #         path: ./output/${{ steps.wsa.outputs.artifact }}.${{ inputs.compress-format }}
+      - name: Build WSA GAPPS ${{ inputs.arch }}
+        id: wsa
+        run: ./scripts/build.sh --arch ${{ inputs.arch }} --release-type ${{ inputs.release-type }} --magisk-ver ${{ inputs.magisk-ver }} --gapps-brand ${{ inputs.gapps-brand }} --gapps-variant ${{ inputs.gapps-variant }} --root-sol ${{ inputs.root-sol }} --compress-format ${{ inputs.compress-format }}
+
+      - name: Pass to Windows
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.wsa.outputs.artifact }}.${{ inputs.compress-format }}
+          path: ./output/${{ steps.wsa.outputs.artifact }}.${{ inputs.compress-format }}
+
+      - name: Prepare release tag
+        id: date
+        run: echo "date=$(date +'v%Y-%m-%d')" >> "$GITHUB_OUTPUT"
 
   compress-vhdx:
     name: Compress to VHDX
     runs-on: windows-2022
-    # needs: build
+    needs: build
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
       - name: Download raw zip
         uses: actions/download-artifact@v3
         with:
-          path: ./output
+          path: ./output/${{ needs.build.outputs.zipname }}
+          name: ${{ needs.build.outputs.zipname }}.${{ inputs.compress-format }}
 
       - name: Remove unused artifact
         uses: geekyeggo/delete-artifact@v2
@@ -97,9 +113,7 @@ jobs:
 
       - name: Convert to VHDX
         id: convert
-        run: |
-          tree
-          .\zip2vhdx\convert
+        run: .\zip2vhdx\convert
         shell: pwsh
 
       - name: Upload artifact
@@ -107,3 +121,13 @@ jobs:
         with:
           name: ${{ steps.convert.outputs.artifact_name }}
           path: ${{ steps.convert.outputs.artifact_path }}
+
+      - name: Upload build to release
+        uses: svenstaro/upload-release-action@v2
+        if: ${{ inputs.release }}
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ steps.convert.outputs.artifact_path }}
+          tag: ${{ needs.build.outputs.date }}
+          overwrite: true
+          file_glob: true

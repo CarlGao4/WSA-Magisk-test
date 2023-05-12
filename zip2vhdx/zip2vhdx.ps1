@@ -28,12 +28,12 @@ if ($p.ExitCode -ne 0) {
     exit 1
 }
 
-$p = Start-Process -NoNewWindow -Wait "7z.exe" ("x " + $zipfile.FullName + " ..\" + $zipfile.BaseName)
+$p = Start-Process -NoNewWindow -Wait "7z.exe" ('x "' + $zipfile.FullName + '" "..\' + $zipfile.BaseName + '"')
 if ($p.ExitCode -ne 0) {
     exit 1
 }
 
-if ((Test-Path -Path ("..\" + $zipfile.BaseName + "\MakePri.ps1")) -eq $true) {
+if (((Test-Path -Path ("..\" + $zipfile.BaseName + "\MakePri.ps1")) -eq $true) -and ((Test-Path -Path ("..\" + $zipfile.BaseName + "\MakePri.exe")) -eq $true)) {
     Start-Process -NoNewWindow -Wait (Get-Process -Id $PID).Path "-ExecutionPolicy Bypass -File MakePri.ps1" -WorkingDirectory ($PSScriptRoot + "\..")
 }
 
