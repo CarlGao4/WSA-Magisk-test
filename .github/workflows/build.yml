@@ -18,7 +18,7 @@ jobs:
         root: [magisk, none]
         gapps: [MindTheGapps, none]
         release: [retail]
-        compress-format: [zip]
+        compress-format: [7z]
 
     steps:
       - name: Checkout
@@ -55,7 +55,7 @@ jobs:
       - name: Download raw zip
         uses: actions/download-artifact@v3
         with:
-          name: ${{ jobs.build.steps.wsa.outputs.artifact }}.${{ jobs.build.matrix.compress-format }}
+          name: ${{ Write-Host '$1' >steps.wsa.outputs.artifact }}.${{ Write-Host '$1' >matrix.compress-format }}
           path: ./output
 
       - name: Convert to VHDX
@@ -65,13 +65,13 @@ jobs:
       - name: Remove unused artifact
         uses: geekyeggo/delete-artifact@v2
         with:
-          name: ${{ jobs.build.steps.wsa.outputs.artifact }}.${{ jobs.build.matrix.compress-format }}
+          name: ${{ Write-Host '$1' >steps.wsa.outputs.artifact }}.${{ Write-Host '$1' >matrix.compress-format }}
 
       - name: Upload build to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./${{ jobs.build.steps.wsa.outputs.artifact }}.vhdx
-          tag: ${{ jobs.build.steps.date.outputs.date }}
+          file: ./${{ Write-Host '$1' >steps.wsa.outputs.artifact }}.vhdx
+          tag: ${{ Write-Host '$1' >steps.date.outputs.date }}
           overwrite: true
           file_glob: true
