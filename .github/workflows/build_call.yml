@@ -98,6 +98,7 @@ jobs:
       - name: Convert to VHDX
         id: convert
         run: |
+          Set-Location $env:GITHUB_WORKSPACE
           .\zip2vhdx\convert
         shell: pwsh
 
