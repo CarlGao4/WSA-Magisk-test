@@ -4,15 +4,14 @@ on:
   repository_dispatch:
     types: [build]
 
-# concurrency:
-#   group: ${{ github.head_ref || github.ref }}
-#   cancel-in-progress: true
+concurrency:
+  group: ${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
     name: Build WSA
     strategy:
-      max-parallel: 1
       matrix:
         arch: [x64]
         root: [none]

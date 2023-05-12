@@ -17,11 +17,14 @@ Set-Location $PSScriptRoot
 Copy-Item -Path .\Blank-VHD.vhdx -Destination ("..\" + $zipfile.BaseName + ".vhdx") || exit 1
 $vhdx = (Get-ChildItem ("..\" + $zipfile.BaseName + ".vhdx"))[0]
 
+Remove-Item -Force -Recurse ..\mount
+New-Item -ItemType Directory -Path ".." -Name mount
+
 'select vdisk file="' + $vhdx.FullName + '"' > diskpart.txt
 'attach vdisk noerr' >> diskpart.txt
 'select partition 2' >> diskpart.txt
 'remove all noerr' >> diskpart.txt
-'assign letter=W' >> diskpart.txt
+'assign mount="' + (Get-ChildItem "..\mount")[0].FullName + '"' >> diskpart.txt
 
 $p = Start-Process -NoNewWindow -Wait "diskpart.exe" "/s diskpart.txt"
 if ($p.ExitCode -ne 0) {
@@ -41,7 +44,7 @@ Move-Item ("..\" + $zipfile.BaseName) -Destination "W:\"
 
 'select vdisk file="' + $vhdx.FullName + '"' > diskpart.txt
 'select partition 2' >> diskpart.txt
-'attributes volume set readonly' >> diskpart.txt
+'attributes volume set readonly noerr' >> diskpart.txt
 'detach vdisk noerr' >> diskpart.txt
 Start-Process -NoNewWindow -Wait "diskpart.exe" "/s diskpart.txt"
 

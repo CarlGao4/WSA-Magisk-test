@@ -50,10 +50,6 @@ on:
         required: false
         default: false
 
-concurrency:
-  group: ${{ github.head_ref || github.ref }}
-  cancel-in-progress: true
-
 jobs:
   build:
     name: Build WSA
