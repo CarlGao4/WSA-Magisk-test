@@ -14,11 +14,16 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        arch: [x64, arm64]
-        root: [magisk, none]
-        gapps: [MindTheGapps, none]
-        release: [retail]
+        arch: [x64]
+        root: [none]
+        gapps: [MindTheGapps]
+        release: [retail, WIS]
         compress-format: [7z]
+        # arch: [x64, arm64]
+        # root: [magisk, none]
+        # gapps: [MindTheGapps, none]
+        # release: [retail, WIS]
+        # compress-format: [7z]
 
     steps:
       - name: Checkout
