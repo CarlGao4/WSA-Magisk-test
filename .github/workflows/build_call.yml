@@ -99,6 +99,7 @@ jobs:
         id: convert
         run: |
           Set-Location $env:GITHUB_WORKSPACE
+          Write-Host $PWD
           .\zip2vhdx\convert
         shell: pwsh
 
