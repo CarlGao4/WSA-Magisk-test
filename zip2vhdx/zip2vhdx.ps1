@@ -45,7 +45,8 @@ Move-Item ("..\" + $zipfile.BaseName) -Destination "W:\"
 'detach vdisk noerr' >> diskpart.txt
 Start-Process -NoNewWindow -Wait "diskpart.exe" "/s diskpart.txt"
 
-("artifact=" + $vhdx.FullName) >> $env:GITHUB_OUTPUT
+("artifact_name=" + $vhdx.Name) >> $env:GITHUB_OUTPUT
+("artifact_path=" + $vhdx.FullName) >> $env:GITHUB_OUTPUT
 
 try {
     Remove-Item -Force -Recurse diskpart.txt
