@@ -3,46 +3,46 @@ on:
   workflow_call:
     inputs:
       arch:
-        type: choice
+        type: string
         description: Architecture of WSA.
-        required: true
-        options: [x64, arm64]
+        required: false
+        # options: [x64, arm64]
         default: x64
       release-type:
-        type: choice
+        type: string
         description: Release type of WSA. RP = Release Preview; WIS = Insider Slow; WIF = Insider Fast
-        required: true
-        options: ["retail","RP","WIS","WIF"]
+        required: false
+        # options: ["retail","RP","WIS","WIF"]
         default: "retail"
       magisk-ver:
-        type: choice
+        type: string
         description: Magisk version.
-        required: true
-        options: ["stable","beta","canary","debug"]
+        required: false
+        # options: ["stable","beta","canary","debug"]
         default: "stable"
       gapps-brand:
-        type: choice
+        type: string
         description: GApps brand. none for no integration of GApps
-        required: true
-        options: ["OpenGApps","MindTheGapps","none"]
+        required: false
+        # options: ["OpenGApps","MindTheGapps","none"]
         default: "MindTheGapps"
       gapps-variant:
-        type: choice
+        type: string
         description: GApps variant.
-        required: true
-        options: ["super","stock","full","mini","micro","nano","pico","tvstock","tvmini"]
+        required: false
+        # options: ["super","stock","full","mini","micro","nano","pico","tvstock","tvmini"]
         default: "pico"
       root-sol:
-        type: choice
+        type: string
         description: Root solution. none means no root.
-        required: true
-        options: ["magisk","none"]
+        required: false
+        # options: ["magisk","none"]
         default: "magisk"
       compress-format:
-        type: choice
+        type: string
         description: Compress format.
-        required: true
-        options: ["zip","7z"]
+        required: false
+        # options: ["zip","7z"]
         default: "7z"
 
 concurrency:
