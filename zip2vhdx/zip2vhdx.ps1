@@ -33,11 +33,11 @@ if ($p.ExitCode -ne 0) {
     exit 1
 }
 
-if ((Test-Path -Path "..\MakePri.ps1") -eq $true) {
+if ((Test-Path -Path ("..\" + $zipfile.BaseName + "\MakePri.ps1")) -eq $true) {
     Start-Process -NoNewWindow -Wait (Get-Process -Id $PID).Path "-ExecutionPolicy Bypass -File MakePri.ps1" -WorkingDirectory ($PSScriptRoot + "\..")
 }
 
-Copy-Item (" ..\" + $zipfile.BaseName) -Destination "W:\"
+Move-Item ("..\" + $zipfile.BaseName) -Destination "W:\"
 
 'select vdisk file="' + $vhdx.FullName + '"' > diskpart.txt
 'select partition 2' >> diskpart.txt
@@ -45,12 +45,14 @@ Copy-Item (" ..\" + $zipfile.BaseName) -Destination "W:\"
 'detach vdisk noerr' >> diskpart.txt
 Start-Process -NoNewWindow -Wait "diskpart.exe" "/s diskpart.txt"
 
+("artifact=" + $vhdx.FullName) >> $env:GITHUB_OUTPUT
+
 try {
     Remove-Item -Force -Recurse diskpart.txt
 }
 catch {}
 try {
-    Remove-Item -Force -Recurse extracted
+    Remove-Item -Force -Recurse ("..\" + $zipfile.BaseName)
 }
 catch {}
 Set-Location $StartDir
