@@ -1,4 +1,4 @@
-name: Build WSA Magisk
+name: Build WSA Magisk (funtion)
 on:
   workflow_call:
     inputs:
