@@ -1,14 +1,10 @@
 name: Build WSA Magisk
 on:
-  schedule:
-    - cron: "30 2 1 * *"
-  push:
-    branches: [main]
   workflow_dispatch:
   repository_dispatch:
     types: [build]
 
-concurrency: 
+concurrency:
   group: ${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
@@ -22,7 +18,7 @@ jobs:
         root: [magisk, none]
         gapps: [MindTheGapps, none]
         release: [retail]
-        compress-format: [7z]
+        compress-format: [zip]
 
     steps:
       - name: Checkout
@@ -39,17 +35,42 @@ jobs:
 
       - name: Build WSA GAPPS ${{ matrix.root }} ${{ matrix.arch }}
         id: wsa
-        run: ./scripts/build.sh --arch ${{ matrix.arch }} --release-type ${{ matrix.release }} --magisk-ver stable --gapps-brand ${{ matrix.gapps }} --root-sol ${{ matrix.root }} --remove-amazon --compress-format ${{ matrix.compress-format }}
+        run: ./scripts/build.sh --arch ${{ matrix.arch }} --release-type ${{ matrix.release }} --magisk-ver stable --gapps-brand ${{ matrix.gapps }} --root-sol ${{ matrix.root }} --compress-format ${{ matrix.compress-format }}
 
       - name: Prepare release tag
         id: date
         run: echo "date=$(date +'v%Y-%m-%d')" >> "$GITHUB_OUTPUT"
 
+      - name: Pass to Windows
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.wsa.outputs.artifact }}.${{ matrix.compress-format }}
+          path: ./output/${{ steps.wsa.outputs.artifact }}.${{ matrix.compress-format }}
+
+  compress-vhdx:
+    name: Compress to VHDX
+    runs-on: windows-2022
+
+      - name: Download raw zip
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ jobs.build.steps.wsa.outputs.artifact }}.${{ jobs.build.matrix.compress-format }}
+          path: ./output
+
+      - name: Convert to VHDX
+        run: |
+          pwsh.exe -ExecutionPolicy RemoteSigned .\zip2vhdx\zip2vhdx.ps1
+
+      - name: Remove unused artifact
+        uses: geekyeggo/delete-artifact@v2
+        with:
+          name: ${{ jobs.build.steps.wsa.outputs.artifact }}.${{ jobs.build.matrix.compress-format }}
+
       - name: Upload build to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./output/${{ steps.wsa.outputs.artifact }}.${{ matrix.compress-format }}
-          tag: ${{ steps.date.outputs.date }}
+          file: ./${{ jobs.build.steps.wsa.outputs.artifact }}.vhdx
+          tag: ${{ jobs.build.steps.date.outputs.date }}
           overwrite: true
           file_glob: true
