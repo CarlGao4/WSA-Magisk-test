@@ -98,7 +98,7 @@ jobs:
       - name: Convert to VHDX
         id: convert
         run: |
-          pwsh.exe -ExecutionPolicy RemoteSigned -Command "$PWD"
+          pwsh.exe -ExecutionPolicy RemoteSigned -Command "echo $PWD && ls"
           pwsh.exe -ExecutionPolicy RemoteSigned .\zip2vhdx\convert.ps1
 
       - name: Upload artifact

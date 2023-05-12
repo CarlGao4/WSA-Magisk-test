@@ -16,6 +16,8 @@
 :: Copyright (C) 2023 LSPosed Contributors
 ::
 
+%~d0
+cd "%~dp0"
 @echo off
 if not exist Install.ps1 (
     echo "Install.ps1" is not found.
