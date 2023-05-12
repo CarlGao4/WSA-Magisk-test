@@ -4,9 +4,9 @@ on:
   repository_dispatch:
     types: [build]
 
-concurrency:
-  group: ${{ github.head_ref || github.ref }}
-  cancel-in-progress: true
+# concurrency:
+#   group: ${{ github.head_ref || github.ref }}
+#   cancel-in-progress: true
 
 jobs:
   build:
