@@ -10,6 +10,7 @@ concurrency:
 
 jobs:
   build:
+    id: build
     name: Build WSA
     runs-on: ubuntu-latest
     strategy:
@@ -50,6 +51,7 @@ jobs:
   compress-vhdx:
     name: Compress to VHDX
     runs-on: windows-2022
+    needs: build
     steps:
 
       - name: Download raw zip
