@@ -10,7 +10,6 @@ concurrency:
 
 jobs:
   build:
-    id: build
     name: Build WSA
     runs-on: ubuntu-latest
     strategy:
@@ -57,7 +56,7 @@ jobs:
       - name: Download raw zip
         uses: actions/download-artifact@v3
         with:
-          name: ${{ Write-Host '$1' >steps.wsa.outputs.artifact }}.${{ Write-Host '$1' >matrix.compress-format }}
+          name: ${{ steps.wsa.outputs.artifact }}.${{ matrix.compress-format }}
           path: ./output
 
       - name: Convert to VHDX
@@ -67,13 +66,13 @@ jobs:
       - name: Remove unused artifact
         uses: geekyeggo/delete-artifact@v2
         with:
-          name: ${{ Write-Host '$1' >steps.wsa.outputs.artifact }}.${{ Write-Host '$1' >matrix.compress-format }}
+          name: ${{ steps.wsa.outputs.artifact }}.${{ matrix.compress-format }}
 
       - name: Upload build to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./${{ Write-Host '$1' >steps.wsa.outputs.artifact }}.vhdx
-          tag: ${{ Write-Host '$1' >steps.date.outputs.date }}
+          file: ./${{ steps.wsa.outputs.artifact }}.vhdx
+          tag: ${{ steps.date.outputs.date }}
           overwrite: true
           file_glob: true
