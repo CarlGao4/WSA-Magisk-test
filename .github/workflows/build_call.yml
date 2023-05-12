@@ -69,7 +69,7 @@ jobs:
 
       - name: Build WSA GAPPS ${{ inputs.arch }}
         id: wsa
-        run: ./scripts/build.sh --arch ${{ inputs.arch }} --release-type ${{ inputs.release-type }} --magisk-ver ${{ inputs.magisk-ver }} --gapps-brand ${{ inputs.gapps-brand }} --gapps-variant ${{ inputs.gapps-variant }} --root-sol ${{ inputs.root-sol }} --remove-amazon --compress-format ${{ inputs.compress-format }}
+        run: ./scripts/build.sh --arch ${{ inputs.arch }} --release-type ${{ inputs.release-type }} --magisk-ver ${{ inputs.magisk-ver }} --gapps-brand ${{ inputs.gapps-brand }} --gapps-variant ${{ inputs.gapps-variant }} --root-sol ${{ inputs.root-sol }} --compress-format ${{ inputs.compress-format }}
 
       - name: Pass to Windows
         uses: actions/upload-artifact@v3
@@ -88,12 +88,14 @@ jobs:
         with:
           path: ./output
 
+      - name: Remove unused artifact
+        uses: geekyeggo/delete-artifact@v2
+        with:
+          name: |
+            *.zip
+            *.7z
+
       - name: Convert to VHDX
         id: convert
         run: |
           pwsh.exe -ExecutionPolicy RemoteSigned .\zip2vhdx\convert.ps1
-
-      - name: Remove unused artifact
-        uses: geekyeggo/delete-artifact@v2
-        with:
-          name: ${{ steps.wsa.outputs.artifact }}.${{ matrix.compress-format }}
