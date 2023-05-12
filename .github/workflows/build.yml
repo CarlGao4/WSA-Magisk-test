@@ -50,6 +50,7 @@ jobs:
   compress-vhdx:
     name: Compress to VHDX
     runs-on: windows-2022
+    steps:
 
       - name: Download raw zip
         uses: actions/download-artifact@v3
