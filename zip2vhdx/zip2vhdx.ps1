@@ -55,7 +55,6 @@ Move-Item ..\extract\* -Destination "..\mount\"
 Write-Host "Unmounting VHDX"
 'select vdisk file="' + $vhdx.FullName + '"' > diskpart.txt
 'select partition 2' >> diskpart.txt
-'attributes volume set readonly noerr' >> diskpart.txt
 'detach vdisk noerr' >> diskpart.txt
 Start-Process -NoNewWindow -Wait "diskpart.exe" "/s diskpart.txt"
 
