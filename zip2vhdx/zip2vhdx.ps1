@@ -15,7 +15,7 @@ $zipfile = (Get-ChildItem $zip)[0]
 Set-Location $PSScriptRoot
 
 Write-Host "Copying VHDX"
-Copy-Item -Path .\Blank-VHD.vhdx -Destination ("..\" + $zipfile.BaseName + ".vhdx") || exit 1
+Copy-Item -Path .\Blank-VHD.vhdx -Destination ("..\" + $zipfile.BaseName + ".vhdx")
 $vhdx = (Get-ChildItem ("..\" + $zipfile.BaseName + ".vhdx"))[0]
 
 try {
@@ -25,13 +25,15 @@ catch {}
 New-Item -ItemType Directory -Path ".." -Name mount
 
 Write-Host "Mounting VHDX"
-'select vdisk file="' + $vhdx.FullName + '"' > diskpart.txt
+('select vdisk file="' + $vhdx.FullName + '"') > diskpart.txt
 'attach vdisk noerr' >> diskpart.txt
 'select partition 2' >> diskpart.txt
 'remove all noerr' >> diskpart.txt
-'assign mount="' + (Get-ChildItem "..\mount")[0].FullName + '"' >> diskpart.txt
+Write-Host ('assign mount="' + (Get-ChildItem "..")[0].Parent.FullName + '\mount"')
+('assign mount="' + (Get-ChildItem "..")[0].Parent.FullName + '\mount"') >> diskpart.txt
 
-$p = Start-Process -NoNewWindow -Wait "diskpart.exe" "/s diskpart.txt"
+$p = Start-Process -NoNewWindow -Wait -PassThru "diskpart.exe" "/s diskpart.txt"
+Write-Host ("diskpart exit with code " + $p.ExitCode)
 if ($p.ExitCode -ne 0) {
     exit 1
 }
