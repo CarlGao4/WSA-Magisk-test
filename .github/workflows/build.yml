@@ -23,6 +23,7 @@ jobs:
         # gapps: [MindTheGapps, none]
         # release: [retail, WIS]
         # compress-format: [7z]
+      fail-fast: false
 
     uses: ./.github/workflows/build_call.yml
     with:
