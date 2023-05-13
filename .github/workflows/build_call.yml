@@ -105,17 +105,15 @@ jobs:
           path: ./output/${{ needs.build.outputs.zipname }}
           name: ${{ needs.build.outputs.zipname }}-${{ needs.build.outputs.rand }}.${{ inputs.compress-format }}
 
-      - name: Remove unused artifact
-        uses: geekyeggo/delete-artifact@v2
-        with:
-          name: |
-            *.zip
-            *.7z
-
       - name: Convert to VHDX
         id: convert
         run: .\zip2vhdx\convert
         shell: pwsh
+
+      - name: Remove unused artifact
+        uses: geekyeggo/delete-artifact@v2
+        with:
+          name: ${{ needs.build.outputs.zipname }}-${{ needs.build.outputs.rand }}.${{ inputs.compress-format }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
