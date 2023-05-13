@@ -39,7 +39,7 @@ if ($p.ExitCode -ne 0) {
 }
 
 Write-Host "Extracting file"
-$p = Start-Process -NoNewWindow -Wait "7z.exe" ('x "' + $zipfile.FullName + '" ..\extract')
+$p = Start-Process -NoNewWindow -Wait -PassThru "7z.exe" ('x "' + $zipfile.FullName + '" ..\extract')
 if ($p.ExitCode -ne 0) {
     exit 1
 }
