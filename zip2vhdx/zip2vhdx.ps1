@@ -18,7 +18,10 @@ Write-Host "Copying VHDX"
 Copy-Item -Path .\Blank-VHD.vhdx -Destination ("..\" + $zipfile.BaseName + ".vhdx") || exit 1
 $vhdx = (Get-ChildItem ("..\" + $zipfile.BaseName + ".vhdx"))[0]
 
-Remove-Item -Force -Recurse ..\mount
+try {
+    Remove-Item -Force -Recurse ..\mount
+}
+catch {}
 New-Item -ItemType Directory -Path ".." -Name mount
 
 Write-Host "Mounting VHDX"
