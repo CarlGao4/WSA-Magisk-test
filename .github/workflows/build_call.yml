@@ -58,10 +58,15 @@ jobs:
     outputs:
       zipname: ${{ steps.wsa.outputs.artifact }}
       date: ${{ steps.date.outputs.date }}
+      rand: ${{ steps.rand.outputs.rand }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Generate random index
+        id: rand
+        run: echo "rand=$RANDOM" >> "$GITHUB_OUTPUT"
 
       - name: Install Dependencies
         run: |
@@ -79,7 +84,7 @@ jobs:
       - name: Pass to Windows
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ steps.wsa.outputs.artifact }}.${{ inputs.compress-format }}
+          name: ${{ steps.wsa.outputs.artifact }}-${{ steps.rand.outputs.rand }}.${{ inputs.compress-format }}
           path: ./output/${{ steps.wsa.outputs.artifact }}.${{ inputs.compress-format }}
 
       - name: Prepare release tag
@@ -98,7 +103,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           path: ./output/${{ needs.build.outputs.zipname }}
-          name: ${{ needs.build.outputs.zipname }}.${{ inputs.compress-format }}
+          name: ${{ needs.build.outputs.zipname }}-${{ needs.build.outputs.rand }}.${{ inputs.compress-format }}
 
       - name: Remove unused artifact
         uses: geekyeggo/delete-artifact@v2

@@ -16,12 +16,12 @@ jobs:
         arch: [x64]
         root: [none]
         gapps: [MindTheGapps]
-        release: [retail, WIS]
+        release: [retail]
         compress-format: [7z]
         # arch: [x64, arm64]
         # root: [magisk, none]
         # gapps: [MindTheGapps, none]
-        # release: [retail, WIS]
+        # release: [retail, WIF]
         # compress-format: [7z]
       fail-fast: false
 
