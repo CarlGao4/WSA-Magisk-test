@@ -10,13 +10,13 @@ if ($zip.Length -eq 0) {
 
 $ErrorActionPreference = "Stop"
 $StartDir = $PWD
-$zipfile = (Get-ChildItem $zip)[0]
+$zipfile = Get-Item $zip
 
 Set-Location $PSScriptRoot
 
 Write-Host "Copying VHDX"
 Copy-Item -Path .\Blank-VHD.vhdx -Destination ("..\" + $zipfile.BaseName + ".vhdx")
-$vhdx = (Get-ChildItem ("..\" + $zipfile.BaseName + ".vhdx"))[0]
+$vhdx = Get-Item ("..\" + $zipfile.BaseName + ".vhdx")
 
 try {
     Remove-Item -Force -Recurse ..\mount
@@ -29,8 +29,7 @@ Write-Host "Mounting VHDX"
 'attach vdisk noerr' >> diskpart.txt
 'select partition 2' >> diskpart.txt
 'remove all noerr' >> diskpart.txt
-Write-Host ('assign mount="' + (Get-ChildItem "..")[0].Parent.FullName + '\mount"')
-('assign mount="' + (Get-ChildItem "..")[0].Parent.FullName + '\mount"') >> diskpart.txt
+('assign mount="' + (Get-Item "..\mount").FullName + '"') >> diskpart.txt
 
 $p = Start-Process -NoNewWindow -Wait -PassThru "diskpart.exe" "/s diskpart.txt"
 Write-Host ("diskpart exit with code " + $p.ExitCode)
