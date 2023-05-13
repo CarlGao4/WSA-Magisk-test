@@ -13,16 +13,11 @@ jobs:
     name: Build WSA
     strategy:
       matrix:
-        arch: [x64]
-        root: [none]
-        gapps: [MindTheGapps]
-        release: [retail]
+        arch: [x64, arm64]
+        root: [magisk, none]
+        gapps: [MindTheGapps, none]
+        release: [WIS]
         compress-format: [7z]
-        # arch: [x64, arm64]
-        # root: [magisk, none]
-        # gapps: [MindTheGapps, none]
-        # release: [retail, WIF]
-        # compress-format: [7z]
       fail-fast: false
 
     uses: ./.github/workflows/build_call.yml
@@ -32,3 +27,4 @@ jobs:
       gapps-brand: ${{ matrix.gapps }}
       root-sol: ${{ matrix.root }}
       compress-format: ${{ matrix.compress-format }}
+      release: true
