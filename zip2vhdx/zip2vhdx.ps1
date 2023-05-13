@@ -38,7 +38,7 @@ if ($p.ExitCode -ne 0) {
 }
 
 Write-Host "Extracting file"
-$p = Start-Process -NoNewWindow -Wait -PassThru "7z.exe" ('x "' + $zipfile.FullName + '" ..\extract')
+$p = Start-Process -NoNewWindow -Wait -PassThru "7z.exe" ('x "' + $zipfile.FullName + '" -o..\extract')
 if ($p.ExitCode -ne 0) {
     exit 1
 }
@@ -50,7 +50,7 @@ if (((Test-Path -Path ("..\extract\MakePri.ps1")) -eq $true) -and ((Test-Path -P
 
 Write-Host "Moving files into VHDX"
 New-Item -ItemType Directory -Path ..\mount -Name $zipfile.BaseName
-Move-Item ..\extract\* -Destination ("..\mount\" + $zipfile.BaseName)
+Move-Item ..\extract\* -Destination "..\mount\"
 
 Write-Host "Unmounting VHDX"
 'select vdisk file="' + $vhdx.FullName + '"' > diskpart.txt
