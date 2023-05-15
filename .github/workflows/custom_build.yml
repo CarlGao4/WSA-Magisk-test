@@ -51,29 +51,14 @@ on:
         default: "7z"
 
 jobs:
-  custbuild:
-    name: Build WSA
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout ♻️
-        uses: actions/checkout@v3
-
-      - name: Install Dependencies 🧑‍🏭
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y whiptail lzip patchelf e2fsprogs python3-pip p7zip-full attr qemu-utils unzip sudo
-          python3 -m pip install -r scripts/requirements.txt -q
-
-      - name: Grant exec permission to script 👑
-        run: chmod +x ./scripts/build.sh
-
-      - name: Build WSA 🏗️
-        id: wsa
-        run: ./scripts/build.sh --arch ${{ inputs.arch }} --release-type ${{ inputs.release-type }} --magisk-ver ${{ inputs.magisk-ver }} --gapps-brand ${{ inputs.gapps-brand }} --gapps-variant ${{ inputs.gapps-variant }} --root-sol ${{ inputs.root-sol }} --remove-amazon --compress-format ${{ inputs.compress-format }}
-
-      - name: Upload Artifact 🤌
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ steps.wsa.outputs.artifact }}
-          path: ./output/${{ steps.wsa.outputs.artifact }}.${{ inputs.compress-format }}
+  build:
+    name: Custom Build
+    uses: ./.github/workflows/build_call.yml
+    with:
+      arch: ${{ inputs.arch }}
+      release-type: ${{ inputs.release-type }}
+      gapps-brand: ${{ inputs.gapps-brand }}
+      root-sol: ${{ inputs.root-sol }}
+      compress-format: ${{ inputs.root-sol }}
+      gapps-variant: ${{ inputs.gapps-variant }}
+      magisk-ver: ${{ inputs.magisk-ver }}
